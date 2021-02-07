@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Job Search</title>
+        <link rel="stylesheet" href="{{ url_for('static',filename='style_report.css') }}"/>
+        <style>
+            section {
+                display:grid;
+                gap:20px;
+                grid-template-columns: repeat(6, 1fr);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Search Results</h1>
+        <h3>Found {{resultsNumber}} results for: {{searchingBy}}</h3>
+        <a href="/export?word={{searchingBy}}">Export to CSV file</a>
+        <section>
+            <h4>Title</h4>
+            <h4>Company</h4>
+            <h4>Location</h4>
+            <h4>Link</h4>
+            <h4>Relative Skill</h4>
+            <h4>Day</h4>
+            {% for job in jobs %}
+                <span>{{job.title}}</span>
+                <span>{{job.company}}</span>
+                <span>{{job.location}}</span>
+                <a href="{{job.link}}" target="_blank">Apply</a>
+                <span>{{job.relative_skills}}</span>
+                <span>{{job.day}}</span>
+            {% endfor %}
+        <section>
+    </body>
+</html>

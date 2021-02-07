@@ -1,13 +1,47 @@
-from indeed import get_jobs as get_indeed_jobs
-from stackoverflow import get_jobs as get_stack_jobs
+from flask import Flask, render_template, request, redirect, send_file
+from scarpper import get_jobs
+from exporter import save_to_file
 
-for i in range(10):
-  print("start")
+app = Flask("jobScrapper", template_folder='./templates', static_folder='./static')
 
-# indeed
-indeed_jobs = get_indeed_jobs()
-# stackoverflow
-stack_jobs = get_stack_jobs()
-jobs = indeed_jobs + stack_jobs
-for i in jobs:
-  print(f"{i}\n")
+db = {}
+
+@app.route("/")
+def home():
+  return render_template('job_search.html')
+
+@app.route("/report")
+def report():
+  word = request.args.get('input').strip()
+  if word:
+    word = word.lower()
+    existing_db = db.get(word)
+    if existing_db:
+      jobs = existing_db
+    else:
+      jobs = get_jobs(word)
+      db[word] = jobs;
+  else:
+    return redirect("/")
+  return render_template(
+    'report.html',
+    resultsNumber=len(jobs),
+    searchingBy=word,
+    jobs=jobs)
+
+@app.route("/export")
+def export():
+  try:
+    word = request.args.get('word').strip()
+    if not word:
+      raise Exception()
+    word = word.lower()
+    jobs = db.get(word)
+    if not jobs:
+      raise Exception()
+    save_to_file(jobs)
+    return send_file("jobs.csv")
+  except:
+    return redirect("/")
+
+app.run(host="127.0.0.1", port=3000)

@@ -2,10 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 
 PAGE = 1
-URL = "https://stackoverflow.com/jobs?q=java"
 DETAIL_LINK = "https://stackoverflow.com/jobs/"
 
-def extract_page():
+def extract_page(URL):
   try:
     result = requests.get(URL)
     soup = BeautifulSoup(result.text, 'html.parser')
@@ -15,8 +14,8 @@ def extract_page():
     last_page = pages[-2].get_text(strip=True)
     return int(last_page)
   except:
-    print("STACK_OVER_FLOW_ERROR")
-    return None
+    print("NONE RESULT")
+    return 0
 
 def extract_job(html):
   link_ID = html.find("a", {
@@ -29,24 +28,31 @@ def extract_job(html):
           "span", recursive=False)
   company = company.get_text(strip=True)
   location = location.get_text(strip=True)
+  link = f"{DETAIL_LINK}{link_ID}"
+  day = html.find('ul', {
+        "class":"mt4 fs-caption fc-black-500 horizontal-list"
+        }).find("span").string
   relative_all = html.find("div", {
         "class":"ps-relative"})
-  relative_skills = []
+  relative_skills = ""
   relatives = relative_all.find_all("a", {"class":"post-tag"})
   for relative in relatives:
-    relative_skills.append(relative.string)
+    relative_skills += relative.string
+    if relative is not relatives[-1]:
+      relative_skills+=", "
   return {
-    "title":title,
-    "company":company,
-    "location":location,
-    "relative_skills":relative_skills,
-    "detail_link":f"{DETAIL_LINK}{link_ID}"
+    'title':title,
+    'company':company,
+    'location':location,
+    'day':day,
+    'link':link,
+    'relative_skills':relative_skills
   }
 
-def extract_jobs(last_page):
+def extract_jobs(last_page, URL):
   jobs = []
-  if last_page > 20:
-    last_page = 20
+  if last_page > 2:
+    last_page = 2
   for page in range(last_page):
     result = requests.get(f"{URL}&pg={page+1}")
     print(f"Scrapping stack page{page+1} -> {result}")
@@ -58,7 +64,8 @@ def extract_jobs(last_page):
   return jobs
 
 
-def get_jobs():
-  last_page = extract_page()
-  jobs = extract_jobs(last_page)
+def get_jobs(word):
+  URL = f"https://stackoverflow.com/jobs?q={word}"
+  last_page = extract_page(URL)
+  jobs = extract_jobs(last_page, URL)
   return jobs
