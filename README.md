@@ -9,10 +9,10 @@ BeautifulSoup4, requests, flask
 ### 구현
 
 - 검색 창
-<img width="700" src="images/0.png">
+<img width="700" src="images/0.jpg">
 
 - 검색 결과
-<img width="700" src="images/1.png">
+<img width="700" src="images/1.jpg">
 
 - 검색 결과를 CSV파일로 저장
-<img width="700" src="images/2.png">
+<img width="700" src="images/2.heic">
