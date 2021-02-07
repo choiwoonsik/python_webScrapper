@@ -15,4 +15,4 @@ BeautifulSoup4, requests, flask
 <img width="700" src="images/1.jpg">
 
 - 검색 결과를 CSV파일로 저장
-<img width="700" src="images/2.heic">
+<img width="700" src="images/2.png">
